@@ -88,7 +88,7 @@ def detail_product(request, pk):
     return render(request, 'app/detail.html', context)
 
 
-def order(request, pk):
+def order_product(request, pk):
     product = get_object_or_404(Product, id=pk)
     form = OrderModelForm()
     if request.method == 'POST':
@@ -98,11 +98,11 @@ def order(request, pk):
             order.product = product
             order.save()
             return redirect('detail', pk)
-    context = {
-        'form': form,
-        'product': product
-    }
-    return render(request, 'app/detail.html', context)
+        context = {
+            'form': form,
+            'product': product
+        }
+        return render(request, 'app/detail.html', context)
 
 
 # def add_product(request):
@@ -159,3 +159,27 @@ def add_comment(request, product_id):
     }
 
     return render(request, 'app/detail.html', context)
+
+
+def delete_product(request, pk):
+    product = Product.objects.filter(id=pk).first()
+    if product:
+        product.delete()
+        return redirect('index')
+    return render('app/detail.html', {'product': product})
+
+
+def edit_product(request, pk):
+    product = Product.objects.get(id=pk)
+    form = ProductModelForm(instance=product)
+    if request.method == 'POST':
+        form = ProductModelForm(request.POST, request.FILES, instance=product)
+        if form.is_valid():
+            form.save()
+            return redirect('detail', pk)
+    context = {
+        'form': form,
+        'product': product
+    }
+
+    return render(request, 'app/update-product.html', context)

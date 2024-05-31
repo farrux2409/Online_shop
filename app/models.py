@@ -1,6 +1,8 @@
 from django.db import models
 
 
+
+
 # Create your models here.
 class Category(models.Model):
     title = models.CharField(max_length=255, null=True, blank=True)
@@ -27,9 +29,7 @@ class Product(models.Model):
     image = models.ImageField(upload_to='images/')
     rating = models.PositiveIntegerField(choices=RatingChoices.choices, default=RatingChoices.zero)
     discount = models.IntegerField(default=0)
-    category = models.ManyToManyField(Category, blank=True, null=True)
-
-
+    category = models.ManyToManyField(Category)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -66,11 +66,15 @@ class Comment(models.Model):
 
 
 class Order(models.Model):
-    costumer = models.CharField(max_length=100)
-    phone_number = models.CharField(max_length=100)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
+    costumer = models.CharField(max_length=100, null=True, blank=True)
+    phone_number = models.CharField(max_length=13, null=True, blank=True)
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, related_name='orders', null=True, blank=True)
 
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.phone_number
 
 
 # class Cheap(models.Model):
